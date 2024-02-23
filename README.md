@@ -5,15 +5,19 @@
 
 Например, надо отправить coverage отчет после прогона pytest
 
-<!-- TODO: дописать -->
-
 ```python
 def pytest_sessionfinish(session, exitstatus):
-    await send_dir(
+    import asyncio
+
+    asyncio.run(send_dir(
         dir_path="htmlcov",
         smtp_hostname="localhost",
         smtp_port=1025,
         from_email="yoba@yoba.net",
-        recipients_emails="peka@yoba.net",
+        recipient_emails="peka@yoba.net",
+        )
     )
 ```
+
+## Публикация
+Для ручной публикации необходимо задать переменные окружения `TWINE_USERNAME` и `TWINE_PASSWORD`

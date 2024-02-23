@@ -122,7 +122,7 @@ async def main():
         smtp_hostname="localhost",
         smtp_port=1025,
         from_email="yoba@yoba.net",
-        recipients_emails="biba@space.ru",
+        recipient_emails="biba@space.ru",
     )
 
 

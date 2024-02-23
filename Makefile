@@ -11,5 +11,7 @@ run:
 build:
 	poetry build
 
+publish: build
+	poetry run twine upload dist/*
+
 # TODO: tests
-# TODO: publish
