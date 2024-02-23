@@ -1,9 +1,21 @@
 [tool.poetry]
-name = "aio-send-dir"
+name = "aio_send_dir"
 version = "0.1.0"
 description = "Gives you the ability to compress and send directory to a email"
 authors = ["Aleksei Devyatkin <aleksei@devyatkin.dev>"]
 readme = "README.md"
+repository = "https://github.com/devalv/aio_send_dir"
+packages = [{include = "aio_send_dir"}]
+
+classifiers = [
+    'Operating System :: OS Independent',
+    'Programming Language :: Python',
+    'Programming Language :: Python :: 3',
+    'Programming Language :: Python :: 3.10',
+    'Programming Language :: Python :: 3.11',
+    'Programming Language :: Python :: 3.12',
+    'Programming Language :: Python :: 3 :: Only',
+]
 
 [tool.poetry.dependencies]
 python = "^3.11"

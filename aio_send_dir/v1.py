@@ -7,9 +7,9 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from pathlib import Path
 
-import aiosmtplib as smtp
-from aiofiles import open
+import aiofiles
 from aiofiles.os import scandir
+from aiosmtplib import SMTP
 from zipstream import AioZipStream
 
 _LOGGER = logging.getLogger(__name__)
@@ -22,7 +22,7 @@ async def compress_report(dir_path: Path) -> Path:
     assert dir_path.is_dir(), f"Path {dir_path} should be a directory that contains htmlcov report"
 
     report_name: Path = Path(f"{dir_path}-{datetime.now().strftime('%Y%m%d-%H%M%S')}.zip")
-    async with open(report_name, mode="wb") as z:
+    async with aiofiles.open(report_name, mode="wb") as z:
         async for chunk in AioZipStream(
             ({"file": f, "compression": "deflate"} for f in await scandir(dir_path))
         ).stream():
@@ -56,13 +56,13 @@ async def send_mail(
     msg.attach(MIMEText(message, text_type, "utf-8"))
     # Attach report
     part = MIMEBase("application", "octet-stream")
-    async with open(report_path, "rb") as f:
+    async with aiofiles.open(report_path, "rb") as f:
         part.set_payload(await f.read())
     encoders.encode_base64(part)
     part.add_header("Content-Disposition", f"attachment; filename={report_path.name}")
     msg.attach(part)
 
-    server = smtp.SMTP(hostname=smtp_hostname, port=smtp_port, use_tls=use_tls, validate_certs=validate_certs)
+    server = SMTP(hostname=smtp_hostname, port=smtp_port, use_tls=use_tls, validate_certs=validate_certs)
     await server.connect()
     if use_tls:
         await server.starttls()
@@ -83,21 +83,47 @@ def delete_file(zip_path: Path) -> None:
         _LOGGER.exception(err)
 
 
-async def main():
-    _LOGGER.debug("Application start")
-    _compressed_report: Path = await compress_report("htmlcov")
-    _LOGGER.debug(f"{_compressed_report=}")
+async def send_dir(
+    dir_path: Path,
+    smtp_hostname: str,
+    smtp_port: int,
+    from_email: str,
+    recipient_emails: str,
+    use_tls: bool = False,
+    validate_certs: bool = False,
+    subject: str = "Your coverage report",
+    message: str = "Your coverage report is enclosed in the email attachment",
+    text_type: str = "plain",
+    smtp_user: str | None = None,
+    smtp_pass: str | None = None,
+):
+    compressed_report: Path = await compress_report(dir_path)
+    _LOGGER.debug(f"{compressed_report=}")
     await send_mail(
+        smtp_hostname=smtp_hostname,
+        smtp_port=smtp_port,
+        from_email=from_email,
+        recipients_emails=recipient_emails,
+        report_path=compressed_report,
+        use_tls=use_tls,
+        validate_certs=validate_certs,
+        subject=subject,
+        message=message,
+        text_type=text_type,
+        smtp_user=smtp_user,
+        smtp_pass=smtp_pass,
+    )
+    delete_file(compressed_report)
+
+
+async def main():
+    await send_dir(
+        dir_path="htmlcov",
         smtp_hostname="localhost",
         smtp_port=1025,
         from_email="yoba@yoba.net",
         recipients_emails="biba@space.ru",
-        report_path=_compressed_report,
     )
-    delete_file(_compressed_report)
-    # TODO: make a package
-    # TODO: README
-    _LOGGER.debug("Application stop")
 
 
 if __name__ == "__main__":

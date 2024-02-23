@@ -8,6 +8,8 @@ format:
 run:
 	poetry run python main.py
 
+build:
+	poetry build
 
 # TODO: tests
 # TODO: publish
