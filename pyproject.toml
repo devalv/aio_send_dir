@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "pytest-msend"
+name = "aio-send-dir"
 version = "0.1.0"
-description = "Gives you the ability to send a coverage report to email"
+description = "Gives you the ability to compress and send directory to a email"
 authors = ["Aleksei Devyatkin <aleksei@devyatkin.dev>"]
 readme = "README.md"
 

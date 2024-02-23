@@ -13,7 +13,7 @@ from aiofiles.os import scandir
 from zipstream import AioZipStream
 
 _LOGGER = logging.getLogger(__name__)
-_LOGGER.setLevel(logging.INFO)
+_LOGGER.setLevel(logging.DEBUG)
 
 
 async def compress_report(dir_path: Path) -> Path:
@@ -74,20 +74,32 @@ async def send_mail(
     await server.quit()
 
 
+def delete_file(zip_path: Path) -> None:
+    try:
+        zip_path.unlink()
+    except FileNotFoundError:
+        pass
+    except Exception as err:
+        _LOGGER.exception(err)
+
+
 async def main():
-    _LOGGER.info("Application start")
-    _name = await compress_report("htmlcov")
-    _LOGGER.info(f"{_name=}")
+    _LOGGER.debug("Application start")
+    _compressed_report: Path = await compress_report("htmlcov")
+    _LOGGER.debug(f"{_compressed_report=}")
     await send_mail(
         smtp_hostname="localhost",
         smtp_port=1025,
         from_email="yoba@yoba.net",
         recipients_emails="biba@space.ru",
-        report_path=_name,
+        report_path=_compressed_report,
     )
-    _LOGGER.info("Application stop")
+    delete_file(_compressed_report)
+    # TODO: make a package
+    # TODO: README
+    _LOGGER.debug("Application stop")
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.DEBUG)
     asyncio.run(main())

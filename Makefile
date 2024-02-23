@@ -7,3 +7,7 @@ format:
 
 run:
 	poetry run python main.py
+
+
+# TODO: tests
+# TODO: publish
