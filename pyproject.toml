@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "aio_send_dir"
-version = "0.1.3"
+version = "0.1.2"
 description = "Gives you the ability to compress and send directory to a email"
 authors = ["Aleksei Devyatkin <aleksei@devyatkin.dev>"]
 readme = "README.md"
