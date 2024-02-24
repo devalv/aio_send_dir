@@ -8,12 +8,25 @@ from email.mime.text import MIMEText
 from pathlib import Path
 
 import aiofiles
-from aiofiles.os import scandir
+from aiofiles.os import remove, scandir
 from aiosmtplib import SMTP
 from zipstream import AioZipStream
 
 _LOGGER = logging.getLogger(__name__)
 _LOGGER.setLevel(logging.DEBUG)
+
+
+class AioSendError(Exception):
+    pass
+
+
+async def delete_file(zip_path: Path) -> None:
+    try:
+        await remove(zip_path)
+    except FileNotFoundError:
+        pass
+    except Exception as err:
+        _LOGGER.exception(err)
 
 
 async def compress_report(dir_path: Path) -> Path:
@@ -74,15 +87,6 @@ async def send_mail(
     await server.quit()
 
 
-def delete_file(zip_path: Path) -> None:
-    try:
-        zip_path.unlink()
-    except FileNotFoundError:
-        pass
-    except Exception as err:
-        _LOGGER.exception(err)
-
-
 async def send_dir(
     dir_path: Path,
     smtp_hostname: str,
@@ -99,33 +103,35 @@ async def send_dir(
 ):
     compressed_report: Path = await compress_report(dir_path)
     _LOGGER.debug(f"{compressed_report=}")
-    await send_mail(
-        smtp_hostname=smtp_hostname,
-        smtp_port=smtp_port,
-        from_email=from_email,
-        recipients_emails=recipient_emails,
-        report_path=compressed_report,
-        use_tls=use_tls,
-        validate_certs=validate_certs,
-        subject=subject,
-        message=message,
-        text_type=text_type,
-        smtp_user=smtp_user,
-        smtp_pass=smtp_pass,
-    )
-    delete_file(compressed_report)
-
-
-async def main():
-    await send_dir(
-        dir_path="htmlcov",
-        smtp_hostname="localhost",
-        smtp_port=1025,
-        from_email="yoba@yoba.net",
-        recipient_emails="biba@space.ru",
-    )
+    try:
+        await send_mail(
+            smtp_hostname=smtp_hostname,
+            smtp_port=smtp_port,
+            from_email=from_email,
+            recipients_emails=recipient_emails,
+            report_path=compressed_report,
+            use_tls=use_tls,
+            validate_certs=validate_certs,
+            subject=subject,
+            message=message,
+            text_type=text_type,
+            smtp_user=smtp_user,
+            smtp_pass=smtp_pass,
+        )
+    except Exception as err:
+        raise AioSendError from err
+    finally:
+        await delete_file(compressed_report)
 
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
-    asyncio.run(main())
+    asyncio.run(
+        send_dir(
+            dir_path=Path("htmlcov"),
+            smtp_hostname="localhost",
+            smtp_port=1025,
+            from_email="yoba@yoba.net",
+            recipient_emails="biba@space.ru",
+        )
+    )
