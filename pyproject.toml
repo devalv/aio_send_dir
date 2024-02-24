@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "aio_send_dir"
-version = "0.1.0"
+version = "0.2.0"
 description = "Gives you the ability to compress and send directory to a email"
 authors = ["Aleksei Devyatkin <aleksei@devyatkin.dev>"]
 readme = "README.md"
@@ -26,7 +26,6 @@ aiosmtplib = "^3.0.1"
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^3.6.2"
-twine = "^5.0.0"
 
 [build-system]
 requires = ["poetry-core"]

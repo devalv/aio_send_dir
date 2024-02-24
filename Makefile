@@ -12,6 +12,6 @@ build:
 	poetry build
 
 publish: build
-	poetry run twine upload dist/*
+	poetry publish -u ${PYPI_USERNAME} -p ${PYPI_PASSWORD}
 
 # TODO: tests

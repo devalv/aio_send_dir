@@ -20,4 +20,4 @@ def pytest_sessionfinish(session, exitstatus):
 ```
 
 ## Публикация
-Для ручной публикации необходимо задать переменные окружения `TWINE_USERNAME` и `TWINE_PASSWORD`
+Для ручной публикации необходимо задать переменные окружения `PYPI_USERNAME` и `PYPI_PASSWORD`
