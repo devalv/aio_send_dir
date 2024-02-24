@@ -14,4 +14,5 @@ build:
 publish: build
 	poetry publish -u ${PYPI_USERNAME} -p ${PYPI_PASSWORD}
 
-# TODO: tests
+test:
+	poetry run pytest --cov aio_send_dir --cov-report html --cov-report term -n auto tests/
