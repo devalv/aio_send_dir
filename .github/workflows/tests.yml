@@ -26,5 +26,5 @@ jobs:
             key: venv-${{ hashFiles('poetry.lock') }}
         - name: Install the project dependencies
           run: poetry install
-        - name: Try to build pkg
+        - name: Run tests
           run: poetry run pytest --cov aio_send_dir --cov-report term -n auto tests/
