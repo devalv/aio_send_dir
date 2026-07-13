@@ -21,7 +21,7 @@ classifiers = [
 python = "^3.11"
 aiofiles = {extras = ["os"], version = "^23.2.1"}
 aiozipstream = "^0.4"
-aiosmtplib = "^3.0.1"
+aiosmtplib = ">=3.0.1,<6.0.0"
 
 
 [tool.poetry.group.dev.dependencies]
