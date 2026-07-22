@@ -13,8 +13,9 @@ def pytest_sessionfinish(session, exitstatus):
         dir_path="htmlcov",
         smtp_hostname="localhost",
         smtp_port=1025,
-        from_email="yoba@yoba.net",
+        from_email="yoba@boba.net",
         recipient_emails="peka@yoba.net",
+        sender_alias="aio_send_dir",
         )
     )
 ```
