@@ -19,7 +19,7 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = "^3.11"
-aiofiles = {extras = ["os"], version = "^23.2.1"}
+aiofiles = {extras = ["os"], version = ">=23.2.1,<26.0.0"}
 aiozipstream = "^0.4"
 aiosmtplib = "^5.1.1"
 
