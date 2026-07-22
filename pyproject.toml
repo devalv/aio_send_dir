@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "aio_send_dir"
-version = "0.1.4"
+version = "0.1.5"
 description = "Gives you the ability to compress and send directory to a email"
 authors = ["Aleksei Devyatkin <aleksei@devyatkin.dev>"]
 readme = "README.md"
@@ -37,11 +37,11 @@ build-backend = "poetry.core.masonry.api"
 [tool.ruff]
 preview = true # (E271,E203) https://docs.astral.sh/ruff/preview/
 
-unfixable = [
+lint.unfixable = [
     "ERA", # do not autoremove commented out code
 ]
 
-select = [
+lint.select = [
     "A", # same flake8-builtins
     "B", # same flake8-bugbear
     "E", # pycodestyle

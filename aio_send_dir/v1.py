@@ -5,6 +5,7 @@ from email import encoders
 from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from email.utils import formataddr
 from pathlib import Path
 
 import aiofiles
@@ -57,13 +58,16 @@ async def send_mail(
     text_type: str = "plain",
     smtp_user: str | None = None,
     smtp_pass: str | None = None,
+    sender_alias: str | None = None,
 ) -> None:
     assert smtp_hostname, "Hostname should be set"
     assert smtp_port, "Port should be set"
     assert recipients_emails, "Recipients emails should be set"
 
     msg = MIMEMultipart()
-    msg.add_header("From", from_email)
+    from_header = formataddr((sender_alias, from_email)) if sender_alias else from_email
+
+    msg.add_header("From", from_header)
     msg.add_header("To", recipients_emails)
     msg.add_header("Subject", subject)
     msg.attach(MIMEText(message, text_type, "utf-8"))
@@ -100,6 +104,7 @@ async def send_dir(
     text_type: str = "plain",
     smtp_user: str | None = None,
     smtp_pass: str | None = None,
+    sender_alias: str | None = None,
 ):
     compressed_report: Path = await compress_report(dir_path)
     _LOGGER.debug(f"{compressed_report=}")
@@ -117,6 +122,7 @@ async def send_dir(
             text_type=text_type,
             smtp_user=smtp_user,
             smtp_pass=smtp_pass,
+            sender_alias=sender_alias,
         )
     except Exception as err:
         raise AioSendError from err
@@ -133,5 +139,6 @@ if __name__ == "__main__":
             smtp_port=1025,
             from_email="yoba@yoba.net",
             recipient_emails="biba@space.ru",
+            sender_alias="aio_send_dir",
         )
     )
